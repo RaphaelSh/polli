@@ -40,6 +40,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": https://warm-shore-85556.herokuapp.com/,
+  "proxy": "https://warm-shore-85556.herokuapp.com/",
   "devDependencies": {}
 }
