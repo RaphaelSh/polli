@@ -1,0 +1,117 @@
+
+body{
+    width:100vw;
+    height:100vh;
+    letter-spacing: .2em;
+    background-color:#FDFDFD;
+}
+
+/*----------------------------- home ------------------------------*/
+
+.home{
+        text-align:center;
+        padding:2em;
+        background-color: #FDFDFD !important;
+
+}
+.cardsGrid{
+    background-color: #FDFDFD !important;
+    padding: 2%;
+}
+
+h1.home_header{
+    color:#744 ;
+    padding:1.4em 1.4em 1em 1.4em ;
+    font-size:3em;
+    margin: 0 2em 1.4em 2em;
+    border-bottom: 1.5px inset #fee;
+    
+}
+.cardsRow{
+    -webkit-column-count: 3;
+	-webkit-column-gap: .2%;
+	-webkit-column-fill: auto;
+	
+	-moz-column-count: 3;
+	-moz-column-gap: .2%;
+	-moz-column-fill: auto;
+	
+	column-count: 3;
+	column-gap: .2%;
+	column-fill: auto;
+	
+	grid-auto-flow: dense;
+
+}
+
+.card{
+    -webkit-break-inside: avoid-column !important;
+	-moz-break-inside: avoid-column !important;
+	break-inside: avoid-column !important;
+	width: 100% !important;
+}
+
+.drop{
+    background-color:blue;
+}
+
+.menu{
+    margin:0 !important;
+}
+
+/*----------------------------- pollsPage ------------------------------*/
+
+
+ .accordion .title {
+  -webkit-transition: background 0.1s ease, color 0.1s ease;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+
+
+.pollsPage {
+    height:100vh;
+    .welcome_class{
+        padding:2em;
+        color: darken(#755,10%) !important;
+    }
+}
+
+.createdAt {
+    float: right !important;
+}
+
+.myPollsView {
+      max-height:90vh !important;
+      border:1px solid #eee;
+      overflow:scroll;
+      display:tabel-cell !important;
+      vertical-align: middle !important;
+
+    
+}
+.pollsAcordion {
+    width:100% !important;
+    max-height:100% !important;
+}
+
+
+
+/*----------------------------- Modal ------------------------------*/
+.dimmer{
+    background-color:  rgba(0,0,0,0.2) !important;
+}
+
+.modalHeader{
+    background-color:lighten(#655,20%) !important;
+    color:white !important;
+}
+
+.modalContent{
+    color:#444 !important;
+}
+
+.selection{
+    color: lighten(#655,20%) !important;
+    font-size: 1.3em !important;
+}
