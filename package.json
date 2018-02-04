@@ -45,7 +45,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://polli-gilts.c9users.io:8081",
+  "proxy": "https://warm-shore-85556.herokuapp.com",
   "devDependencies": {
     "sass-loader": "^6.0.6"
   }
