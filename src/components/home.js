@@ -7,8 +7,7 @@ import PropTypes from 'prop-types';
 import { fetchAllPolls, saveVote } from '../actions/polls';
 import { Menu  } from 'semantic-ui-react';
 
-
-import './style/home.scss';
+import './style/home.css';
 import PollsGrid from './polls/pollsGrid';
 
 import PollModal from './modal';

@@ -20,6 +20,7 @@
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "node": "^9.4.0",
+    "node-sass-chokidar": "^0.0.3",
     "react": "^0.14.9",
     "react-dom": "^0.14",
     "react-faux-dom": "^4.1.0",
@@ -35,11 +36,17 @@
     "validator": "^9.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build-css": "node-sass-chokidar src/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
+    "start-js": "react-scripts start",
+    "start": "npm-run-all -p watch-css start-js",
+    "build-js": "react-scripts build",
+    "build": "npm-run-all build-css build-js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://warm-shore-85556.herokuapp.com/",
-  "devDependencies": {}
+  "proxy": "http://polli-gilts.c9users.io:8081",
+  "devDependencies": {
+    "sass-loader": "^6.0.6"
+  }
 }
