@@ -98,6 +98,7 @@ class home extends Component {
                                 
                     />
                     <h1 className='home_header'>WELCOME TO POLLI!</h1>
+                    <image src = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Rooster_silhouette.svg'/>
                     <div>
                         <Menu pointing secondary>
                             { selectionOptions.map((opt,key) =>(
