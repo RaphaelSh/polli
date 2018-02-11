@@ -18,22 +18,24 @@ export default class question extends Component{
     }
     
     render(){
-        const { width, height } = this.props;
+        const { height } = this.props;
         
         const div_style = {
                     position:'absolute',
-                    width: height*0.35,
-                    height: height*0.35,
-                    left : (width - height*0.35)/2,
-                    top : (height - height*0.35)/2,
+                    width: height*0.32,
+                    height: height*0.32,
+                    top:'50%',
+                    left:'50%',
+                    transform:'translate(-50%,-50%)',
                     textAlign: 'center',
                     display:'table',
-                    color : '#777'
+                    color : '#642'
         };
             
         const question_style = {
             display : 'table-cell',
-            verticalAlign : 'middle'
+            verticalAlign : 'middle',
+            fontFamily:'Abhaya Libre'
         };
         
         return (<div style={div_style} >

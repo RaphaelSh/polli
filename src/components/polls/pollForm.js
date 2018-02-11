@@ -1,13 +1,13 @@
 import React from 'react';
-import TextField from '../../common/textFormField';
+import TextField from '../../common/elements/textFormField';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { isEmpty } from 'lodash';
 import classnames from 'classnames';
-import { Transition } from 'semantic-ui-react';
+import { Transition, Grid } from 'semantic-ui-react';
 
-import { addNewPoll, fetchPoll, updatePoll } from '../../actions/polls';
+//import { addNewPoll, fetchPoll, updatePoll } from '../../actions/polls';
 
     const validateInput = (question, options) => {
         let errors = {};
@@ -37,16 +37,16 @@ class pollForm extends React.Component {
             question: this.props.poll? this.props.poll.question : '',
             options: this.props.poll? this.props.poll.options: new Array(3).fill(''),
             
-            placeholders:{
-              question:'Say, what do you think about me?',
-              options:['You are the only one I think about!','Well..there are better..',"Oh! you're just unbearable!"]
+            placeholders : {
+              question : 'To be or not to be?',
+              options : ['To be!','Not to be',"Well it depends.."]
             },
             
-            errors:{},
-            isLoading: true,
-            redirect:false,
-            
-            shake: true
+            errors : {},
+            isLoading : true,
+            redirect : false,
+
+            shake : true
         };
         
         this.onChange = this.onChange.bind(this);
@@ -62,7 +62,7 @@ class pollForm extends React.Component {
     }
     
     componentWillReceiveProps = (nextProps) => {
-        
+       // console.log('componentWillReceiveProps: ',nextProps);
         if(nextProps && nextProps.poll){
             this.setState({
                 _id: nextProps.poll._id,
@@ -73,30 +73,29 @@ class pollForm extends React.Component {
         }
     }
     
-    componentDidUpdate = (nextProps) =>{
-        if( this.state.redirect) { this.props.history.push('/mypolls'); }
+    componentDidUpdate = (nextProps) =>{ 
+       console.log('this.state.redirect: ',this.state.redirect)
+        if( this.state.redirect ) this.props.history.push('/mypolls');
     }
     
-    onChange(e){
+    onChange(e) {
+        
         const cur = e.currentTarget;
-
-        if(cur.name ==='question') { 
-            this.setState({ question : e.target.value });
-        }
-        else{
-            const options = this.state.options;
-            const index = cur.dataset.index;
+        if ( cur.name ==='question' ) this.setState({ question : e.target.value });
+        
+        else {
+            const options = this.state.options, index = cur.dataset.index;
             options[index] = e.target.value;
             this.setState({options});
         }
     }
     
-    savePoll = (poll_id, question, options, user_id ) =>{
-            
-            const pos = poll_id? this.props.updatePoll({ poll_id, question, options }):
-                                this.props.addNewPoll({ question, options, user_id });
-            const promise = new Promise(res=> res(pos));
-            return promise.then(()=>this.setState({ redirect: true }));
+    savePoll = (poll_id, question, options, user_id ) => {
+        let promise = new Promise( res => res( 
+            poll_id ? this.props.updatePoll ({ poll_id, question, options }) 
+                         : this.props.addNewPoll({ question, options, user_id })
+                    ));
+        promise.then( res => this.setState({ redirect : true }) );
     }
     
     onSubmit(e){
@@ -109,8 +108,7 @@ class pollForm extends React.Component {
         const { _id } = this.state, { user } = this.props, user_id = user? user.id : null;
         
         this.setState({ errors: {}, isLoading: true });
-        this.savePoll(_id, question, options, user_id )
-                    .catch((err) => err.response.json().then(({errors}) => this.setState({ errors, loading:false})))
+        this.savePoll(_id, question, options, user_id );
     }
     
     addOption(e) {
@@ -139,23 +137,23 @@ class pollForm extends React.Component {
         
         return  this.state.isLoading? ( <div className="ui active inverted dimmer">
                                             <div className="ui text loader">{'Loading'}</div>
-                                    </div> ): 
-            (<div className = "ui two column centered grid">
-                    <div className = "row" />
-                    <div className = "row" />
-            
+                                        </div> ): 
+            ( 
+            <Grid centered verticalAlign='middle' style={{height:'100vh', width: '100vw'}} 
+                    className = 'addNewPoll'>
+            <Grid.Column width={10}>
             <Transition animation='shake' duration = {700} visible = { shake }>
                 <form className = { classnames("ui","form","column","segment",'padded','raised',{loading:!!this.state.isLoading}) } onSubmit = {this.onSubmit}>
                
-                    <h1 className = 'ui header blue' >Create a new poll</h1>
+                    <h1 className = 'ui header brown' >Create a new poll</h1>
 
                      <div className="ui grid right aligned" >
 
                         <div className = 'right floated eight wide column' >
-                            <button disabled = {isLoading} className="ui blue basic button" tabIndex="0" onClick = {this.addOption}>
+                            <button disabled = {isLoading} className="ui brown basic button" tabIndex="0" onClick = {this.addOption}>
                                Add an option
                             </button>
-                            <button disabled = {isLoading} className="ui blue basic button" tabIndex="0" onClick = {this.removeAll}>
+                            <button disabled = {isLoading} className="ui brown basic button" tabIndex="0" onClick = {this.removeAll}>
                                Remove all
                             </button>
                         </div>
@@ -195,21 +193,23 @@ class pollForm extends React.Component {
                     <div className="ui grid right aligned" >
                         <div className = 'column center aligned'>
     
-                            <button disabled = {isLoading} type='submit' className="ui blue basic button" tabIndex="0">
+                            <button disabled = {isLoading} type='submit' className="ui brown basic button" tabIndex="0">
                                Save
                             </button>
                         </div>
                     </div>
                 </form>
             </Transition>
-        </div>
+        </Grid.Column>
+        </Grid>
         );
     }
 }
+const func = PropTypes.func.isRequired;
 
 pollForm.propTypes = {
-  addNewPoll: PropTypes.func.isRequired,
-  fetchPoll: PropTypes.func.isRequired
+  addNewPoll: func,
+  fetchPoll: func
 };
 
 function mapStateToProps(state, props) {
@@ -221,4 +221,11 @@ function mapStateToProps(state, props) {
     };
 }
 
-export default connect(mapStateToProps,{ addNewPoll, fetchPoll, updatePoll })(withRouter(pollForm));
+const mapDispatchToProps = dispatch => ({
+  addNewPoll : pollData  => dispatch ({ type: 'ADD_NEW_POLL', pollData }), 
+  fetchPoll :  poll_id => dispatch ({ type: 'FETCH_POLL', poll_id }),
+  updatePoll : pollData => dispatch ({ type: 'UPDATE_POLL', pollData })
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps )(withRouter(pollForm));

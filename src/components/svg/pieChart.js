@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withFauxDOM } from 'react-faux-dom';
 import _ from 'lodash';
+import { Segment } from 'semantic-ui-react';
 
 import Tooltip from './toolTip';
 import Question from './question'
@@ -25,27 +26,29 @@ class PieChart extends React.Component {
     computeTooltipProps = () => {
         
         const   { width, height, options } = this.props,
-                { votes, pos, dir } = this.state.tooltip, [ x, y ] = pos,
+                { votes, pos, dir } = this.state.tooltip, [ x, y ] = pos, 
+                left = dir ==='start' ? width * 0.5 + ( x - (0.05 * width)) : width * 0.5 + ( x + (0.05 * width)),
                 percenage = Math.round((+votes/_.sumBy( options,'votes')) * 100);
         return { style: {
-                  top : height/2 + y + 0.01*height,
-                  left : dir ==='start'? width * 0.5 + x + 0.02 * width : width * 0.5 + x - 0.19 * width 
-                },
+                        width : 0.2 * width,
+                        top : height/2 + y + 0.05*height,
+                        left : dir ==='start'? left :  left - 0.2*width
+                        },
                 content: `Number of votes: ${votes}`,
                 extra: `Ratio in percetege: ${percenage}%`
-            };
+                };
     }
     
     setHover(d){
 
         if (d) {
                 const { data, textPos, textAnchor } = d;
-                        this.setState({ tooltip: {
+                this.setState({ tooltip: {
                                             votes: data.votes,
                                             pos: textPos,
                                             dir: textAnchor
-                                          }
-                        });    
+                                        }
+                });    
         }
         else this.setState({ tooltip:null });
     }
@@ -62,13 +65,13 @@ class PieChart extends React.Component {
     
     componentDidMount(){
         
-        // the faux div stored in its virtual DOM in state.chart
-        const{ options, width, height, connectFauxDOM, animateFauxDOM } = this.props, 
+        const { options, width, height, connectFauxDOM, animateFauxDOM } = this.props,
         faux = connectFauxDOM('div', 'chart'),
 
-        color = d3.scaleLinear().domain([1, 10]).range(['#99707A','#FFCABC']),
-        data = _.cloneDeep(options), // pie() mutates data
+        color = d3.scaleLinear().domain([1, 10]).range(['#794F40','#FFED9F']),
         
+        data = _.map(options, _.clone),// pie() mutates data
+       
         /* ------------ pie chart ------------*/
         
         radius = height / 2.5,
@@ -84,17 +87,17 @@ class PieChart extends React.Component {
         pie = d3.pie().value(d => d.votes+1),
     
         svg = d3.select( faux )
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height),
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height),
     
         slices = svg.append('g')
-            .attr('transform', `translate(${width/2}, ${height/2})`)
-            .attr('class','slices'),
+                    .attr('transform', `translate(${width/2}, ${height/2})`)
+                    .attr('class','slices'),
        
         arcs = slices.selectAll('g.slices').data(pie(data));
     
-        /* slices and texts */
+        /* --------------- slices and texts --------------- */
         
         function arcTween(d) {
             d.innerRadius = 0;
@@ -166,11 +169,11 @@ class PieChart extends React.Component {
         const questionProps = { height, width, question };
         
         return (
-            <div className = 'pieChart' style={ style }>
+            <Segment className = 'pieChart' style={ style }>
                 { tooltip && <Tooltip {...this.computeTooltipProps()} /> }
                 { animationOver && <Question  { ...questionProps } /> }
                 { chart } 
-            </div>
+            </Segment>
         );
     }
 }

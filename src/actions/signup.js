@@ -1,7 +1,7 @@
 
 //import { handleResponse } from '../common/functions/signup'; 
 import axios from 'axios';
-import setAuthorizationToken from '../utils/setAuthorizationToken';
+import setAuthorizationToken from '../components/utils/setAuthorizationToken';
 import jwt from 'jsonwebtoken';
 
 export const setCurrentUser = user => ({   
@@ -9,13 +9,12 @@ export const setCurrentUser = user => ({
         user
 });
 
-const saveUserOnClient = (userData ,dispatch, URL) => {
+export const saveUserOnClient = (userData ,dispatch, URL) => {
     
     return axios.post('/api/'+URL, userData, { withCredentials: true })
         .then(({ data }) => {
             window.localStorage.setItem('clientData',data);
             setAuthorizationToken(data);
-            
             dispatch(setCurrentUser(jwt.decode(data)));
             return data;
         },

@@ -3,11 +3,10 @@ import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { Grid, Button, Form, Segment, Icon, Message } from 'semantic-ui-react';
 
-import TextField from '../../common/textFormField';
+import TextField from '../../common/elements/textFormField';
 import { validateInput } from '../../common/functions/signup';
-import { login } from '../../actions/signup';
-
 
 
 class LoginPage extends Component {
@@ -26,10 +25,8 @@ class LoginPage extends Component {
         }
         
         onChange (e) {
-            if(!this.state.errors.form){
-                this.setState({ errors:{}});
-            }
-            this.setState({[e.target.name]: e.target.value });
+            if(!this.state.errors) this.setState({ errors:{}});
+            this.setState({ [e.target.name] : e.target.value });
         }
     
         isValid(data) {
@@ -38,76 +35,105 @@ class LoginPage extends Component {
             return isValid;
         }
         
-        closeMessage (e) {
-            console.log("asd");
-            this.setState({errors:{}});
+        closeMessage (e) { 
+            this.setState({ errors:{} });
         }
         
         onSubmit (e) {
-           e.preventDefault();
-           const {identifier, password} = this.state;
-           if(this.isValid({ identifier, password })) {
+            e.preventDefault();
+            const {identifier, password} = this.state;
+            if ( this.isValid({ identifier, password })) {
                 this.setState({ errors: {}, isLoading: true});
-                this.props.login(this.state).then(
-                    res => this.props.history.push('/'),
-                    err => this.setState({ errors: err , isLoading:false})  
-                );
-           }
+                this.props.login({ identifier, password });
+            }
+            else {
+                let errors = Object.assign({},this.state.errors, { form: 'One or more of the details you provided was incorrect. Please try agian.'});                
+                this.setState({ errors});
+            }
         }
+        
+        componentWillReceiveProps ( nextProps ) {
+            if(nextProps.errors ==='Invalid Credentials') {
+                let errors = Object.assign({},this.state.errors, { form: 'One or more of the details you provided was incorrect. Please try agian.'});                
+                this.setState({ errors, isLoading:false});
+            }
+            else this.props.history.push('/');
+        }
+        
         
         render(){
             const {identifier, errors, password, isLoading } = this.state;
+            console.log('errors: ',isLoading);
             return(
-                <div className = "ui four column grid ">
-                    <div className = "row" />
-                    
-                    { errors.form ? 
-                        (<div className="ui warning message container grid right aligned">
-                            <div className="ui header row">
-                                
-                                <div className = "center aligned twelve wide column">
-                                    {errors.form}
-                                </div> 
-                                <div className="right aligned two wide column">
-                                        <i className="ui close icon " onClick ={ this.closeMessage }></i>
-                                </div>
-                            </div>
-                            <div className ="row centered">
-                                Please visit our registration page and then try again
-                            </div>
-                        </div>):
-                        (<div className = "row" />)
-                    }
-                    
-                    <form onSubmit = { this.onSubmit } className = { classnames("ui","centered","form","segment","padded","raised","eight","wide","column",{loading:!!isLoading}) }>
-                        <TextField 
-                            propsClass = "ui blue header"
-                            field = 'identifier'
-                            label = 'Username/Email'
-                            value = { identifier }
-                            error = { errors.identifier }
-                            onChange = { this.onChange }
-                        />
-                        <TextField 
-                            propsClass = "ui blue header"
-                            field = 'password'
-                            label = 'Password'
-                            value = { password }
-                            error = { errors.password }
-                            onChange = { this.onChange }
-                            type = 'password'
-                        />
-                        <div className="ui two column centered grid padded">
-                            <button className="ui blue basic button" tabIndex="0" disabled = {isLoading } >Submit</button>
-                        </div>
-                    </form>
-                </div>
+                
+                
+                <Grid centered container 
+                        className = {classnames({'loading':!!isLoading},'login-container')}
+                        style={{width: '100vw !important'}}
+                >
+                
+                <Grid.Column width = {6}>
+                   
+                    <Segment padded raised>
+                        <Grid container style = {{ height : '90vh'}}>
+                            <Grid.Row  className = 'loginMessage'>
+                                { errors.form && 
+                                    <Message warning >
+                                        <Icon name='close' onClick ={ this.closeMessage }></Icon>
+                                        <Message.Header>Invalid credentials</Message.Header>
+                                        <p> { errors.form } </p>
+                                    </Message> 
+                                }
+                            </Grid.Row> 
+                            
+                            <Grid.Row centered className = 'loginForm'>
+                            <Form padded onSubmit = { this.onSubmit } >
+                                 
+                                <TextField 
+                                    propsClass = "ui brown header"
+                                    field = 'identifier'
+                                    label = 'Username/Email'
+                                    value = { identifier }
+                                    onChange = { this.onChange }
+                                />
+                                <TextField 
+                                    propsClass = "ui brown header"
+                                    field = 'password'
+                                    label = 'Password'
+                                    value = { password }
+                                    onChange = { this.onChange }
+                                    type = 'password'
+                                />
+                            <Grid.Row width={2} padded>
+                                <Button basic color='brown' tabIndex="0" disabled = {!!isLoading || errors.form } >Submit</Button>
+                            </Grid.Row>
+                        </Form>
+                        </Grid.Row>
+                         <Grid.Row/>
+                </Grid>
+                </Segment>
+                
+                </Grid.Column>
+            </Grid>
             );
         }
 }
 
+const { func, bool, string } = PropTypes;
+
 LoginPage.propTypes = {
-    login: PropTypes.func.isRequired
+    login: func.isRequired,
+    isAuthenticated: bool.isRequired,
+    errors: string
 };
 
-export default connect(null,{login})(withRouter(LoginPage));
+const mapStateToProps = ({ auth }) => ({
+    isAuthenticated: auth.isAuthenticated,
+    errors: auth.errors
+})
+
+const mapDispatchToProps = dispatch => ({
+    login : userData => dispatch({ type: 'LOGIN', userData })
+})
+
+export default connect( mapStateToProps, mapDispatchToProps )(withRouter(LoginPage));

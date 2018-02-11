@@ -1,6 +1,9 @@
-
+import _ from 'lodash';
 
 export default (state=[], { type, payload } = {}) => {
+    
+   // console.log('reducer active: ',type);
+    //console.log('state: ',state, 'payload: ',payload);
     
     switch(type){
         case 'SET_POLLS': return payload;
@@ -19,14 +22,15 @@ export default (state=[], { type, payload } = {}) => {
             );
         }
         case 'POLL_VOTED': {
+            
             const index = state.findIndex(item => item._id === payload._id ),
             options = state[index].options.map( opt => 
                 opt._id === payload.opt_id ?
                     Object.assign( opt, { votes: opt.votes+1 }): opt
             );
-            let newstate = state.slice();
+            let newstate = _.cloneDeep(state);
             newstate[index] = Object.assign({}, state[index], { options, sum: state[index].sum+1 });
-            console.log('newstate: ',newstate)
+            console.log('newstate: ',newstate);
             return newstate;
         }
 
@@ -36,6 +40,7 @@ export default (state=[], { type, payload } = {}) => {
             else return [ ...state, payload ];
         }
         
-        default: return state;
+        default: {//console.log('default: ',state); 
+        return state;}
     }
 };

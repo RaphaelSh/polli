@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 const mystyles={
   'position':'absolute',
   'overflow':'scroll',
-  'border':'2px solid #ddd',
+  'border':'1px dashed #ddd',
   textAlign:'center',
   color:'#777',
-  width:'17%'
+  backgroundColor:'#fff',
 };
 
-const Tooltip = ({style = {}, content, extra}) => {
+const Tooltip = ({style = {}, content, extra }) => {
   return (
           <div className='tooltip' style={{...mystyles, ...style }}>
             <p> {content} <br/> {extra} </p>

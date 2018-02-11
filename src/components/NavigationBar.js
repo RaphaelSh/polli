@@ -8,6 +8,7 @@ import { withRouter } from "react-router-dom";
 const { bool, string, func } = PropTypes;
 
 class NavigationBar extends React.Component {
+    
     state = { activeItem: 'home' }
 
     logout (e) {
@@ -28,7 +29,9 @@ class NavigationBar extends React.Component {
     }
     
     render(){
-        const { activeItem } = this.state, { isAuthenticated, username } = this.props;
+        const { activeItem } = this.state, { isAuthenticated, username, lastPos, were_home } = this.props,
+        windowHeight = window.innerHeight - 50 ,
+        opacity =  were_home? ( lastPos >= windowHeight ? 1 : 0 ) : 0;
         const guestLinks = (
             <Menu.Menu position='right' color='grey' inverted>
                 <Menu.Item name='login' active={activeItem === 'login'} onClick={this.handleItemClick}>
@@ -42,7 +45,10 @@ class NavigationBar extends React.Component {
         
         
         
-        const options = [{text:'Add a new poll', value:'newpoll',key:1},{text:'My polls', value:'mypolls',key:2},{text:'My profile', value:'profile',key:3}]
+        const options = [   {text:'Add a new poll', value:'newpoll', key:1},
+                            {text:'My polls', value:'mypolls', key:2},
+                            {text:'My profile', value:'profile', key:3}
+                        ]
         
         const memberLinks = (
             <Menu.Menu position='right' color='grey' inverted>
@@ -60,7 +66,8 @@ class NavigationBar extends React.Component {
         
         
         return(
-            <Menu color='grey' inverted className = 'menu'>
+
+            <Menu className = 'navbar' style = {{ opacity }}>
                     <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick}>
                         Home
                     </Menu.Item>
@@ -77,10 +84,19 @@ NavigationBar.propTypes = {
     logout: func.isRequired
 };
 
-const mapStateToProps = ({ auth }) => ({
-    isAuthenticated : auth.isAuthenticated,
-    username: auth.user.username
-});
+const mapStateToProps = ({ auth, home_animations },props) => {
+    const were_home = props.match.isExact;
+    return {
+        isAuthenticated : auth.isAuthenticated,
+        username : auth.user.username,
+        ...home_animations,
+        were_home
+    };
+};
 
-export default connect(mapStateToProps,{ logout })(withRouter(NavigationBar));
+const mapDispatchToProps = dispatch => ({
+    logout : () => dispatch ({ type: 'LOGOUT' })
+})
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps )(NavigationBar));
 

@@ -4,13 +4,12 @@ import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 
 import PropTypes from 'prop-types';
-import { fetchAllPolls, saveVote } from '../actions/polls';
-import { Menu  } from 'semantic-ui-react';
+//import { fetchAllPolls, saveVote } from '../actions/polls';
+import { Menu, Icon } from 'semantic-ui-react';
 
-import './style/home.css';
-import PollsGrid from './polls/pollsGrid';
+import PollsGrid from './polls/pollsGrid_home/pollsGrid';
 
-import PollModal from './modal';
+import PollModal from './utils/modal';
 
 
 class home extends Component {
@@ -25,7 +24,9 @@ class home extends Component {
                 question: '', 
                 option: '' ,
                 _id:'',
-                opt_id:''
+                opt_id:'',
+                
+                headerOpacity:1,
             };
         this.selectPoll = this.selectPoll.bind(this);
         this.consentFuc = this.consentFuc.bind(this);
@@ -37,6 +38,7 @@ class home extends Component {
 
     componentDidMount () { 
         this.props.fetchAllPolls(this.state.selection);
+        
     }
     
     componentWillReceiveProps(){
@@ -76,8 +78,7 @@ class home extends Component {
         this.setState({ modalOpen: false })   
     }
     
-    
-  
+
     render(){
         const { polls } = this.props, { selection, option, question, modalOpen } = this.state,
         
@@ -97,9 +98,22 @@ class home extends Component {
                                 dismissFunc= { this.dismissFunc }
                                 
                     />
-                    <h1 className='home_header'>WELCOME TO POLLI!</h1>
-                    <image src = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Rooster_silhouette.svg'/>
-                    <div>
+                    <div className = 'home-header' style = {{ opacity: this.props.headerOpacity }}>
+                        <video autoPlay muted loop>
+                              <source src={ require('../common/media/people.mp4') } type="video/mp4" />
+                        </video>
+                        <div className='header-text'>
+                            <h1>POLLI VOTTING APP</h1>
+                            <h2> find out what everyone thinks!</h2>
+                        </div>
+                    </div>
+                    
+                    
+                    <div className='home-polls'>
+                        <div className='header-text'>
+                            <h2> View our polls and vote </h2>
+                            <h2> Or login to create a poll and share it with your friends! </h2>
+                        </div>                        
                         <Menu pointing secondary>
                             { selectionOptions.map((opt,key) =>(
                             < Menu.Item name={ opt.replace(/(^[a-z]?)/,(m, p) => p.toUpperCase()) } 
@@ -112,8 +126,16 @@ class home extends Component {
                         <PollsGrid  polls = { polls } 
                                     selectPoll = { this.selectPoll }
                         />
-                        
                     </div>
+                    
+                    <footer>
+                        <p>raphael.shalem@gmail.com</p>
+                        <Icon name = 'github'/>
+                        <Icon name = 'facebook f'/>
+                        <Icon name = 'twitter'/>
+                        <Icon name = 'linkedin square'/>
+                    </footer>    
+                    
                 </div>
         );
     }
@@ -136,5 +158,17 @@ home.propTypes = {
     })) 
 };
 
-export default connect( ({ polls }) => ({ polls }), { fetchAllPolls, saveVote })(withRouter(home));
+const mapStateToProps = ({ polls = [], home_animations = {} }) => {
+  return {
+      polls,
+      headerOpacity: home_animations.op
+  }  
+}
+const mapDispatchToProps = dispatch => ({
+    fetchAllPolls : poll_type => dispatch ({ type: 'FETCH_ALL_POLLS', poll_type }),
+    saveVote : poll_data => dispatch ({ type: 'VOTE', poll_data })
+});
+
+  
+export default connect( mapStateToProps , mapDispatchToProps)(withRouter(home));
 

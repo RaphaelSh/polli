@@ -1,10 +1,13 @@
  
 import React from 'react';
 import PropTypes from 'prop-types';
-import { fetchPoll } from '../../actions/polls';
+//import { fetchPoll } from '../../actions/polls';
 import {connect} from 'react-redux';
 import PieChart from  '../svg/pieChart';
-import LoadingElem from '../../common/loadingElement';
+import LoadingElem from '../../common/elements/loadingElement';
+
+import { Grid } from 'semantic-ui-react';
+
 
 class PollPage extends React.Component {
 
@@ -15,23 +18,26 @@ class PollPage extends React.Component {
         if (!question) { fetchPoll (match.params._id);}
     }
     
-    componentWillReceiveProps() { this.setState({ loading: false });}
+    componentWillReceiveProps() { 
+        console.log('componentWillReceiveProps: ',this.props.options);
+        this.setState({ loading: false });
+    }
 
     render(){
+        if( this.state.loading ) return <LoadingElem/>;
         
         const { clientWidth, clientHeight} = document.documentElement, 
-        height = clientHeight * 0.95, { question, owner, options } = this.props;
+        height = clientHeight, { question, owner, options } = this.props;
+
         const props = {
             question, 
             owner, 
             options,
             height,
-            width: clientWidth,
+            width: clientWidth* 0.7,
         };
         
-        return ( 
-            this.state.loading? <LoadingElem/> : <PieChart { ...props } />
-        );
+        return <Grid centered className = 'pollPage'><PieChart { ...props } /></Grid>;
     }
 
 }
@@ -49,7 +55,13 @@ const mapStateToProps = ( state, props ) => {
     poll = _id ? state.polls.find( item => item._id === _id ) :null;
     if( !poll )  return {};
     const { question, owner, options } = poll;
+    console.log('mapStateToProps: ',options);
+
     return { question, owner, options };
 };
 
-export default connect( mapStateToProps,{ fetchPoll })( PollPage );
+const mapDispatchToProps = dispatch => ({
+    fetchPoll : poll_id => dispatch ({ type: 'FETCH_POLL', poll_id })
+})
+
+export default connect( mapStateToProps, mapDispatchToProps )( PollPage );

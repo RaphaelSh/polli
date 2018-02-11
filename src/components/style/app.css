@@ -1,0 +1,225 @@
+* {
+  box-sizing: border-box; }
+
+body {
+  width: 100vw;
+  height: 100vh;
+  letter-spacing: .2em;
+  background-color: #FDFDFD; }
+
+.mainpage {
+  overflow: hidden;
+  height: 100vh; }
+  .mainpage:hover {
+    overflow-y: scroll; }
+
+.navbar {
+  background-color: #fff !important;
+  position: fixed;
+  width: 100vw !important;
+  z-index: 998;
+  -webkit-transition: all .8s ease;
+  transition: all .8s ease; }
+  .navbar:hover {
+    opacity: 1 !important; }
+
+/*----------------------------- home ------------------------------*/
+footer {
+  font-family: 'Abhaya Libre';
+  width: 100vw;
+  height: 30vh !important;
+  font-size: 1.6em;
+  background-color: #ddd;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  color: #777; }
+
+.home-header {
+  position: relative;
+  top: 0 !important;
+  text-align: center; }
+  .home-header > video {
+    min-height: 100vh;
+    min-width: 100vw;
+    top: 0;
+    left: 0;
+    margin: 0; }
+    .home-header > video > source {
+      border: 2px solid green;
+      padding: 0;
+      margin: 0; }
+  .home-header > .header-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-box-shadow: 5px 5% 5px 20px #d11;
+    -moz-box-shadow: 5px 5px 5px 20px #d11;
+    box-shadow: 0px 0px 20px 20px rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.4);
+    padding: 4% !important; }
+    .home-header > .header-text h1 {
+      font-size: 6em;
+      color: #333; }
+    .home-header > .header-text h2 {
+      font-size: 3em;
+      color: #753;
+      font-family: 'Open+Sans'; }
+
+.home {
+  text-align: center;
+  background-color: #FDFDFD !important; }
+  .home > .home-polls {
+    padding: 5%;
+    min-height: 100vh;
+    font-family: 'Abhaya Libre'; }
+    .home > .home-polls > .header-text {
+      padding: 4% !important; }
+      .home > .home-polls > .header-text > h2 {
+        font-family: 'Open+Sans' !important;
+        color: #753 !important;
+        font-size: 3em !important; }
+
+/*------------- cards grid - home  -------------*/
+.cardsGrid {
+  background-color: #FDFDFD !important;
+  padding: 2%; }
+
+.cardsRow {
+  -webkit-column-count: 3;
+  -webkit-column-gap: .2%;
+  -webkit-column-fill: auto;
+  -moz-column-count: 3;
+  -moz-column-gap: .2%;
+  -moz-column-fill: auto;
+  column-count: 3;
+  column-gap: .2%;
+  column-fill: auto;
+  grid-auto-flow: dense; }
+
+.card {
+  -webkit-break-inside: avoid-column !important;
+  -moz-break-inside: avoid-column !important;
+  break-inside: avoid-column !important;
+  width: 100% !important;
+  background: #e5e0d5 !important; }
+
+.header {
+  color: #444 !important;
+  font-family: 'Abhaya Libre' !important;
+  font-size: 1.5em !important; }
+
+.drop {
+  background-color: blue; }
+
+.menu {
+  margin: 0 !important; }
+
+/*----------------------------- pollsPage ------------------------------*/
+.accordion .title {
+  -webkit-transition: background 0.1s ease, color 0.1s ease;
+  transition: background 0.1s ease, color 0.1s ease;
+  color: #444 !important; }
+  .accordion .title:hover {
+    color: #111 !important; }
+
+.pollsPage {
+  height: 100%;
+  background: white url("../../common/media/apples.jpg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  opacity: 0.7;
+  margin: 0 !important; }
+  .pollsPage .welcome_class {
+    background: rgba(255, 255, 255, 0.75);
+    padding: 2em;
+    color: #1a1109 !important; }
+    .pollsPage .welcome_class h1, .pollsPage .welcome_class h3 {
+      font-family: 'Abhaya Libre !important'; }
+
+.createdAt {
+  float: right !important; }
+
+.myPollsView {
+  max-height: 90vh !important;
+  border: 1px solid #eee;
+  overflow: scroll;
+  display: tabel-cell !important;
+  vertical-align: middle !important; }
+
+.pollsAcordion {
+  width: 100% !important;
+  max-height: 100% !important; }
+
+.pollQuestion {
+  word-wrap: break-word;
+  white-space: nowrap;
+  max-width: 520px;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important; }
+
+/*----------------------------- Modal ------------------------------*/
+.dimmer {
+  background-color: rgba(0, 0, 0, 0.3) !important; }
+
+.modalHeader {
+  background-color: #e5e0d5 !important;
+  color: #532 !important;
+  font-family: 'Abhaya Libre' !important; }
+
+.modalContent {
+  color: #754 !important;
+  font-family: 'Abhaya Libre' !important; }
+  .modalContent > h3 {
+    font-family: 'Abhaya Libre' !important; }
+
+.selection {
+  color: #9b8686 !important;
+  font-size: 1.3em !important;
+  font-family: 'Abhaya Libre' !important; }
+
+div.login-container {
+  height: 100%;
+  background: white url("../../common/media/doors.jpg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  margin: 0 !important;
+  width: 100vw !important; }
+
+.loginMessage {
+  height: 20vh !important;
+  margin: 0  !important; }
+
+.loginForm {
+  margin: 0  !important;
+  height: 40vh !important; }
+
+/*
+style={{ minHeight : '50% !important', 
+                                                maxHeight : '70% !important',
+                                                textAlign : 'center'
+                                            }}
+*/
+.addNewPoll {
+  height: 100%;
+  background: #e0dc6f url("../../common/media/yellow.jpg") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  margin: 0 !important;
+  width: 100vw !important; }
+
+.pollPage {
+  min-height: 100% !important;
+  margin: 0 !important;
+  background: #beb196 !important; }
+
+.pieChart {
+  padding: 0 !important;
+  background: #e5e0d5 !important;
+  margin: 0 !important; }
