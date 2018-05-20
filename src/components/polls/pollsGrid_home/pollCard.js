@@ -48,8 +48,8 @@ class pollCard extends Component{
 
         question = question.replace(question[0],question[0].toUpperCase());
         return (
-
-            <Card raised className = 'card'>
+        <Grid.Column >
+            <Card raised className = 'card' >
             
                 <Card.Content header={ question }
                             meta = { owner }
@@ -77,6 +77,7 @@ class pollCard extends Component{
                     </Grid.Row>
                 </Card.Content>    
             </Card>
+        </Grid.Column>
         );
     }
 }

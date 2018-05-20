@@ -17,7 +17,7 @@ class FlashMessage extends React.Component {
     
     render() {
        const { type, text } = this.props.message;
-
+        console.log('flash: ',type,', ', text)
         return(<Message positive = {type==='success' } 
                         warning = { type==='error' }
                         style = {{zIndex:'999 !important'}}
@@ -56,7 +56,10 @@ FlashMessagesList.propTypes = {
     deleteFlashMessage: PropTypes.func.isRequired 
 };
 
-const mapStateToProps = ({ flashMessages }) => ({ messages: flashMessages });
+const mapStateToProps = ({ flashMessages }) => {
+   // console.log("flashMessages: ",flashMessages);
+    return { messages: flashMessages };
+}
 
 const mapDispatchToProps = dispatch => ({
     deleteFlashMessage: id => dispatch({ type: 'DELETE_FLASH_MESSAGE',id })

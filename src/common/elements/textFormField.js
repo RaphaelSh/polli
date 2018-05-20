@@ -18,11 +18,12 @@ class  TextFieldGroup extends React.Component {
        
         
         render() {
-        const { field, value, label, error, type, onChange, checkUserExists, propsClass, placeholder, addIcon, iconClickFunc, index } = this.props;
+        const { id, field, value, label, error, type, onChange, checkUserExists, propsClass, placeholder, addIcon, iconClickFunc, index } = this.props;
         const { iconVisible } = this.state;
         
         const input_field = (
-              <input type={ type } 
+              <input        type={ type } 
+                            id = { id }
                             name = { field }
                             value = {value}
                             onChange = {onChange}

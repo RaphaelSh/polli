@@ -6,6 +6,8 @@ import { withRouter } from 'react-router-dom';
 import { isEmpty } from 'lodash';
 import classnames from 'classnames';
 import { Transition, Grid } from 'semantic-ui-react';
+import Loading from '../../common/elements/loadingElement';
+import CanvasElement from './background';
 
 //import { addNewPoll, fetchPoll, updatePoll } from '../../actions/polls';
 
@@ -54,6 +56,8 @@ class pollForm extends React.Component {
         this.addOption = this.addOption.bind(this);
         this.removeOption = this.removeOption.bind(this);
         this.removeAll = this.removeAll.bind(this);
+        this.setmycanvasRef = element => { this.mycanvas = element };
+
     }
     
     componentDidMount = () => {
@@ -62,7 +66,6 @@ class pollForm extends React.Component {
     }
     
     componentWillReceiveProps = (nextProps) => {
-       // console.log('componentWillReceiveProps: ',nextProps);
         if(nextProps && nextProps.poll){
             this.setState({
                 _id: nextProps.poll._id,
@@ -73,10 +76,17 @@ class pollForm extends React.Component {
         }
     }
     
-    componentDidUpdate = (nextProps) =>{ 
-       console.log('this.state.redirect: ',this.state.redirect)
-        if( this.state.redirect ) this.props.history.push('/mypolls');
+    
+    componentDidUpdate = (nextProps) => { 
+        if( this.state.redirect ) { this.props.history.push('/mypolls'); }
     }
+    
+    shouldComponentUpdate (nextProps, nextState) {
+        return nextState !==this.state;
+    }
+    
+    //updateCanvas (el) { if(el) { background(el) } } 
+
     
     onChange(e) {
         
@@ -90,12 +100,9 @@ class pollForm extends React.Component {
         }
     }
     
-    savePoll = (poll_id, question, options, user_id ) => {
-        let promise = new Promise( res => res( 
-            poll_id ? this.props.updatePoll ({ poll_id, question, options }) 
-                         : this.props.addNewPoll({ question, options, user_id })
-                    ));
-        promise.then( res => this.setState({ redirect : true }) );
+    savePoll = (poll_id, question, options, user ) => {
+        if (poll_id) { this.props.updatePoll ({ poll_id, question, options }) }
+        else { this.props.addNewPoll({ question, options, user }) }
     }
     
     onSubmit(e){
@@ -105,10 +112,10 @@ class pollForm extends React.Component {
        
         if( !isValid ) { this.setState({ errors: errors, shake: !this.state.shake }); return;}
         
-        const { _id } = this.state, { user } = this.props, user_id = user? user.id : null;
+        const { _id } = this.state, { user } = this.props;
         
-        this.setState({ errors: {}, isLoading: true });
-        this.savePoll(_id, question, options, user_id );
+        this.setState({ errors: {}, isLoading: true, redirect:true },() => this.savePoll(_id, question, options, user ));
+        
     }
     
     addOption(e) {
@@ -135,25 +142,33 @@ class pollForm extends React.Component {
 
         const { question , errors, isLoading, options, placeholders, shake } = this.state;
         
-        return  this.state.isLoading? ( <div className="ui active inverted dimmer">
-                                            <div className="ui text loader">{'Loading'}</div>
-                                        </div> ): 
+        const overlay = {
+                      width:"100vw",
+                      height:"100vh",
+                      
+                      background:'rgba(240, 230, 220,.8)',
+                      overflow: 'hidden'
+        };
+       
+        
+        return  isLoading? <Loading/>: 
             ( 
-            <Grid centered verticalAlign='middle' style={{height:'100vh', width: '100vw'}} 
-                    className = 'addNewPoll'>
+         <div style = {overlay}>
+         <CanvasElement/>
+            <Grid centered verticalAlign='middle' className = 'addNewPoll'>
             <Grid.Column width={10}>
             <Transition animation='shake' duration = {700} visible = { shake }>
-                <form className = { classnames("ui","form","column","segment",'padded','raised',{loading:!!this.state.isLoading}) } onSubmit = {this.onSubmit}>
+                <form className = { classnames("ui","form","column","segment",'padded','raised','addNewPollForm',{loading:!!this.state.isLoading}) } onSubmit = {this.onSubmit}>
                
-                    <h1 className = 'ui header brown' >Create a new poll</h1>
+                    <h1 className = 'ui header grey' > Create a new poll </h1>
 
                      <div className="ui grid right aligned" >
 
                         <div className = 'right floated eight wide column' >
-                            <button disabled = {isLoading} className="ui brown basic button" tabIndex="0" onClick = {this.addOption}>
+                            <button disabled = { isLoading } className="ui grey basic button" tabIndex="0" onClick = {this.addOption}>
                                Add an option
                             </button>
-                            <button disabled = {isLoading} className="ui brown basic button" tabIndex="0" onClick = {this.removeAll}>
+                            <button disabled = { isLoading } className="ui grey basic button" tabIndex="0" onClick = {this.removeAll}>
                                Remove all
                             </button>
                         </div>
@@ -193,7 +208,7 @@ class pollForm extends React.Component {
                     <div className="ui grid right aligned" >
                         <div className = 'column center aligned'>
     
-                            <button disabled = {isLoading} type='submit' className="ui brown basic button" tabIndex="0">
+                            <button disabled = {isLoading} type='submit' className="ui grey basic button" tabIndex="0">
                                Save
                             </button>
                         </div>
@@ -202,9 +217,12 @@ class pollForm extends React.Component {
             </Transition>
         </Grid.Column>
         </Grid>
+    </div>
         );
     }
 }
+//            <canvas width = {window.innerWidth} height = {window.innerHeight} ref={this.updateCanvas.bind(this)} style = {canvas} ></canvas>
+
 const func = PropTypes.func.isRequired;
 
 pollForm.propTypes = {

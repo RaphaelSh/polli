@@ -3,10 +3,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withFauxDOM } from 'react-faux-dom';
 import _ from 'lodash';
-import { Segment } from 'semantic-ui-react';
 
-import Tooltip from './toolTip';
-import Question from './question'
+import Question from './question';
+import Text from './texts';
+import shallowEqual from '../utils/shallowEqual';
+
+import renderLine from './renderLine';
+import { getPathLength } from '../utils/svgUtils';
 
 const d3 = {
   ...require('d3-scale'),
@@ -18,179 +21,246 @@ const d3 = {
 },
 
 { arrayOf, string, number, shape } = PropTypes;
+
+
+const pie = d3.pie().value(d => d.votes+1);
+
  
 class PieChart extends React.Component {
     
-    state = { tooltip:null, animationOver: false }
-    
-    computeTooltipProps = () => {
+    constructor (props) {
+        super(props);
         
-        const   { width, height, options } = this.props,
-                { votes, pos, dir } = this.state.tooltip, [ x, y ] = pos, 
-                left = dir ==='start' ? width * 0.5 + ( x - (0.05 * width)) : width * 0.5 + ( x + (0.05 * width)),
-                percenage = Math.round((+votes/_.sumBy( options,'votes')) * 100);
-        return { style: {
-                        width : 0.2 * width,
-                        top : height/2 + y + 0.05*height,
-                        left : dir ==='start'? left :  left - 0.2*width
-                        },
-                content: `Number of votes: ${votes}`,
-                extra: `Ratio in percetege: ${percenage}%`
-                };
-    }
-    
-    setHover(d){
-
-        if (d) {
-                const { data, textPos, textAnchor } = d;
-                this.setState({ tooltip: {
-                                            votes: data.votes,
-                                            pos: textPos,
-                                            dir: textAnchor
-                                        }
-                });    
+        this.state = {  tooltip:null, 
+                        animationOver: false, 
+                        text_data:[], 
+                        line_pos:[], 
+                        mode : 'render',
+                        sum:0
         }
-        else this.setState({ tooltip:null });
-    }
-    
-    hover = (component) =>{ 
-        component.on('mouseover', (d,i) =>{
-            component.style('cursor','pointer');
-            clearTimeout(component.unsetHoverTimeout);
-            this.setHover(d);
-        }).on('mouseout', d => 
-            component.unsetHoverTimeout = setTimeout(() =>this.setHover(null) , 200)
-        );
-    }
-    
-    componentDidMount(){
         
-        const { options, width, height, connectFauxDOM, animateFauxDOM } = this.props,
-        faux = connectFauxDOM('div', 'chart'),
+        this.setHover = this.setHover.bind(this);
+        this.hover = this.hover.bind(this);
+        this.computeTextsPos = this.computeTextsPos.bind(this);
+        this.mouseover = this.mouseover.bind(this);
+        this.mouseout = this.mouseout.bind(this);
+        this.computePos = this.computePos.bind(this);
+    }
+    
+    
+    setHover ( i ) {
+        if (Number.isInteger(i)) { this.setState({ tooltip: i });}
+        else { this.setState({ tooltip:null }); }
+    }
+    
+    mouseover (i) {
+        clearTimeout( this.unsetHoverTimeout );
+        this.setHover (i);
+    }
+    
+    mouseout () {
+        this.unsetHoverTimeout = setTimeout( () => this.setHover(null) , 100 );
+    }
+    
+    hover = component => component.on('mouseover', ( d, i ) => this.mouseover (i) )
+                                    .on('mouseout', () => this.mouseout());
+    
+    computePos = ( d, i ) => {
+            const pos = this.labelArc.centroid(d), { width } = this.props;
+            pos[0] = ( 0.3 * width ) * ( this.midAngle(d) < Math.PI ? 1 : -1 );
 
-        color = d3.scaleLinear().domain([1, 10]).range(['#794F40','#FFED9F']),
+            const data = {
+                align : this.midAngle(d) < Math.PI ? 'left' : 'right',
+                pos,
+                votes : d.data.votes    
+            };
+            
+            let lp = [ this.arc.centroid(d), this.labelArc.centroid(d), [ pos[0],pos[1]+1.5 ] ]; // added 1.5 for line's width 
+            let { text_data, line_pos } = this.state;
+            text_data.push(data); line_pos.push(lp);
+            this.setState({ text_data, line_pos }, () => {
+
+                if( i === this.props.options.length-1 ) { 
+                    this.setState({ animationOver: true });
+                    line_pos = line_pos.map( l => ({ pos: l, path_length: getPathLength(l)}));
+                    let lines = this.state.mode ==='render' ? 
+                                    this.svg.append('g').attr('class','lines'):
+                                    this.svg.select('g.lines');
+
+                    console.log('line_pos: ',line_pos)
+                    lines = lines.selectAll("path.paths").data(line_pos);
+                    
+                    renderLine(lines, line_pos, this.color, this.state.mode);
+                }
+            });
+    }
+    
+    computeTextsPos = (d, i) => {
+        if (this.state.mode === 'render') {
+            this.computePos(d, i);
+            this.ds = this.ds || [];
+            this.ds.push(d);
+        }
+        else { this.ds.forEach((d, i) => { this.computePos(d, i) }); }
+    }
+    
+    pieChartD3 () {
         
-        data = _.map(options, _.clone),// pie() mutates data
-       
+        const { options, 
+                width, 
+                height, 
+                connectFauxDOM, 
+                animateFauxDOM 
+        } = this.props,
+        
+        { mode } = this.state;
+        
+        const faux = connectFauxDOM( 'div', 'chart');
+
+        this.color = d3.scaleLinear().domain([1, 10]).range(['#8d6560','#fdd5d0']);
+        
+        const data = _.map(options, _.clone);// pie() mutates data
+        
+
         /* ------------ pie chart ------------*/
         
-        radius = height / 2.5,
+        this.radius = Math.min(height, width) / 2.5;
         
-        arc = d3.arc()
-            .innerRadius(radius*0.6)
-            .outerRadius(radius*0.8)
-            .cornerRadius(3)
-            .padAngle(0.02),
+        this.arc = d3.arc ()
+                    .innerRadius( this.radius * 0.6 )
+                    .outerRadius( this.radius * 0.8 )
+                    .cornerRadius( 3 )
+                    .padAngle( 0.02 );
         
-        labelArc = d3.arc().innerRadius(radius*0.9).outerRadius(radius*0.9),
-        midAngle = d => d.startAngle + (d.endAngle - d.startAngle) / 2,
-        pie = d3.pie().value(d => d.votes+1),
-    
-        svg = d3.select( faux )
+        const radiusLabel = this.radius * 0.9;
+        this.labelArc = d3.arc().innerRadius(radiusLabel).outerRadius(radiusLabel);
+        this.midAngle = d => d.startAngle + (d.endAngle - d.startAngle) / 2;
+        
+       // let svg;
+        
+        if (mode==='render') {
+            this.svg = d3
+                .select(faux)
                 .append('svg')
                 .attr('width', width)
-                .attr('height', height),
-    
-        slices = svg.append('g')
-                    .attr('transform', `translate(${width/2}, ${height/2})`)
-                    .attr('class','slices'),
-       
-        arcs = slices.selectAll('g.slices').data(pie(data));
-    
-        /* --------------- slices and texts --------------- */
-        
-        function arcTween(d) {
-            d.innerRadius = 0;
-            var i = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
-            return t => arc(i(t));
-        };
-        
-        let slicesEnter = arcs.enter().append('path');
-                   
-        slicesEnter.transition()
-                    .duration(2000)
-                    .ease(d3.easeBounce)
-                    .attrTween('d',arcTween)
-                    .style('fill', (d, i) => color(i))    
-        
-        this.hover( slicesEnter ); 
-                            
-       
-    // --------------------- texts  --------------------- 
-        const enterQuestion = () => {
-            
-            const line = d3.line().x( d => d[0] ).y( d => d[1]),
-            path = arcs.enter().append('path')
-                            .attr("fill", "none")     // remove fill colour
-                            .attr("stroke","#ADADAE")
-                            .style("stroke-dasharray",'5,5');
+                .attr('height', height)
+                .append('g')
+                .attr('transform', `translate( ${ width / 2 }, ${ height / 2 })`)
+            } 
+        else if (mode === 'resize') {
+            this.svg = d3
+                    .select(faux)
+                    .select('svg')
+                    .attr('width', width)
+                    .attr('height', height)
+                    .select('g')
+                    .attr('transform', `translate( ${ width / 2 }, ${ height / 2 })`);
 
-            path.attr('d',function (d) {
-                let pos = labelArc.centroid(d);
-                pos[0] = radius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
-                let lines = [arc.centroid(d), labelArc.centroid(d), pos];
-                return line(lines);
-            });
-            
-            this.setState({ animationOver:true });
-        },
+        } else this.svg = d3.select(faux).select('svg').select('g');
+       
+        this.arcs = this.svg.selectAll('g.slices').attr('class','slices').data(pie(data))
         
+// --------------- slices --------------- 
         
-        textEnter = arcs.enter().append('text');
-        textEnter.transition()
-            .ease(d3.easeLinear)
-            .duration(1000)
-            .attr('transform', function (d,i) {
-                d.textPos = labelArc.centroid(d);
-                d.textPos[0] = radius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
-                return `translate(${ d.textPos })`;
-            })
-            .style('text-anchor', d => d.textAnchor = midAngle(d) < Math.PI ? 'start' : 'end')         
-            .style('font-size','1.2em')
-            .style("text-shadow","0 0.1em .3em rgba(0, 0, 0, 0.15)")  // colour the line
-            .style('fill', (d,i)=> color(i))
-            .text(d => d.data.option.toUpperCase())
-            .on('end',enterQuestion);
-  
-        this.hover(textEnter );
+
+        const arcTween = d => {
+            let i = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+            return t => this.arc(i(t));
+        };
+       
+        let slicesEnter = mode === 'render' ? this.arcs.enter().append('path') : 
+                                                this.arcs.enter().selectAll('path');
         
-        animateFauxDOM(8000);
+        if( mode === 'render' ) {
+            slicesEnter.style('fill', (d, i) => this.color(i))
+                                        .transition()
+                                        .duration(2000)
+                                        .ease(d3.easeBounce)
+                                        .attrTween('d',arcTween)
+                                        .on('end', this.computeTextsPos);
+        }
+        
+        else if ( mode === 'resize' ) {
+                slicesEnter.attr('d',this.arc );
+                this.computeTextsPos();
+        }
+        
+       slicesEnter
+                .attr('class','slicesEnter')
+                .call(this.hover);
+
+        animateFauxDOM(5000);
         
     }
-
- 
+    
+    componentDidMount () {
+        this.pieChartD3();
+        this.setState({ sum: _.sumBy( this.props.options,'votes')});
+    }
+    
+    componentDidUpdate ( nextProps ) {
+        const shouldResize = props => _.pick(props, ['width','height']);
+        if (!shallowEqual(shouldResize(this.props), shouldResize(nextProps))) {
+            this.setState({ animationOver : false, mode : 'resize', text_data: [], line_pos:[] },()=> this.pieChartD3());
+        }
+    } 
+    
     render() {
         
-        let { chart, height, width, question } = this.props,
-        { tooltip, animationOver } = this.state,
-        style = { width, height, position : 'relative' };
+        let { text_data,tooltip,sum } = this.state, { chart, height, width, question, options } = this.props;
+        const pie_style = { 
+            width, 
+            height,
+            position: 'relative',
+            display: 'inline-block'
+        };
         
         question = question.replace(/(^[a-z]?)/,( m, p ) => p.toUpperCase());
         const questionProps = { height, width, question };
         
+        
+        let textProps = {   height, 
+                            width,
+                            setHover : this.setHover,
+                            sum
+        };
+
         return (
-            <Segment className = 'pieChart' style={ style }>
-                { tooltip && <Tooltip {...this.computeTooltipProps()} /> }
-                { animationOver && <Question  { ...questionProps } /> }
+            <div className = 'pieChart' style = { pie_style }>
                 { chart } 
-            </Segment>
+                <Question  { ...questionProps } /> 
+                {/* texts and lines */}
+                { this.state.animationOver && 
+                    options.map(({option,votes} ,i) =>{
+                        const option_text_props = Object.assign( {}, 
+                                                                 textProps, 
+                                                                 {  points: text_data[i], 
+                                                                    option,
+                                                                    votes,
+                                                                    i,
+                                                                    color : this.color(i),
+                                                                    mouseover: this.mouseover,
+                                                                    mouseout: this.mouseout,
+                                                                    tooltip : tooltip === i
+                                                                 }
+                                                                );
+
+                        return <Text {...option_text_props} key = {i}/>;
+                    })
+                }
+            </div>
         );
     }
+    
 }
-
 
 
 PieChart.propTypes = {
     question : string,
-    owner : string,
-    options : arrayOf( shape( { option: string, votes: number })),
+    options : arrayOf( shape({ option: string, votes: number })),
     width : number,
     height : number
 };
   
 export default withFauxDOM(PieChart);
-
-
-////////////////////////////////////////////////////////////////////////////////
-
 

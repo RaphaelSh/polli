@@ -3,14 +3,26 @@ import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { createSelector } from 'reselect'
+import Loading from '../../../common/elements/loadingElement';
 
-
-import { Accordion, Icon, Grid, Transition  } from 'semantic-ui-react'
+import { Accordion, Icon, Grid, Transition  } from 'semantic-ui-react';
+import Image from '../Image';
 import PollOptions from './poll';
+
+import CanvasElement from '../background';
 
 class PollsPage extends Component {
         
-        state = { loading:true, activeIndex: -1, polls: this.props.polls || {} }
+        constructor (props) {
+            super(props);
+            this.state = { ref_set:false,
+                           loading: true, 
+                           fetching:false, 
+                           activeIndex: -1, 
+                           polls: props.polls || [] 
+            }
+        }
+        
 
         handleClick = (e, titleProps) => {
             const { index } = titleProps;
@@ -18,37 +30,50 @@ class PollsPage extends Component {
         }
         
         componentDidMount(){
-            this.props.fetchPolls(this.props.auth.user.id); 
+            this.setState({ fetching:true },() =>
+                this.props.fetchPolls(this.props.auth.user._id)); 
         }
         
-        componentWillReceiveProps( nextProps ){
-          if( this.state.polls !== nextProps.polls ) this.setState({ polls: nextProps.polls });
-           this.setState({ loading:false }); 
-        } 
-        
-       
-  
-        render(){
-            const { auth } = this.props, { username } = auth.user, { activeIndex, polls } = this.state;
 
-            return(
-                this.state.loading?
-                 <div className="ui active inverted dimmer">
-                    <div className="ui text loader">Loading</div>
-                 </div>:
+        componentWillReceiveProps( nextProps ) {
+            const { fetching, polls } = this.state;
+            if(( fetching && polls === nextProps.polls ) || !fetching ){ return }
             
+            const finish = () => this.setState({ loading:false });
+            this.state.polls === nextProps.polls ? finish() : 
+                        this.setState({ polls: nextProps.polls },() => finish()); 
+        }
+        
+        render() {
+            
+            const { auth } = this.props, 
+                  { name } = auth.user, 
+                  { activeIndex, polls, loading } = this.state;
+            
+            const overlay = {
+                      width:"100vw",
+                      height:"100vh",
+                      background:'rgba(240, 230, 220,.9)',
+                      overflow: 'hidden'
+            };
+            
+            return(
+                loading?
+                 <Loading/>:
+                 <div style = {overlay}>
+                          <CanvasElement/>
                     <Grid verticalAlign = 'middle' centered columns={2} className = 'pollsPage' stackable>
-                        
-                        <Grid.Column width={6} className='welcome_class' >
-                            { !!polls.length ? <h1 >{`Welcome ${ username }, here are your polls!`}</h1> : 
-                                <div style={{textAlign : 'center'}}> 
-                                    <h1>{`Welcome ${ username } to your polls page!`}</h1>
-                                    <h3>This page is now empty since you don't have any polls yet so go ahead and add some!</h3>
-                                </div> }
+
+                         <Grid.Column width={4} className='welcome_class' >
+                            <Image src='https://images.unsplash.com/photo-1422189668989-08f214d6e419?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=4dbb4c54da3179f872519e5adef43e04&auto=format&fit=crop&w=1350&q=80'/>
+                             <div style={{textAlign : 'center'}}> 
+                                    <h2>{!!polls.length ? `Welcome ${ name },`:`Welcome ${ name } to your polls page!`} </h2>
+                                    <h3>{!!polls.length ? `here are your polls!`:
+                                        "This page is now empty since you don't have any polls yet so go ahead and add some!" }</h3>
+                            </div> 
                         </Grid.Column>
+                        <Grid.Column width={12} className='myPollsView' >
                         { !!polls.length &&
-                        <Grid.Column width={10} className='myPollsView' >
-                        
                              <Accordion styled className = 'pollsAcordion'>
 
                             { polls.map((poll,index) => (
@@ -79,9 +104,10 @@ class PollsPage extends Component {
                             ))}
 
                             </Accordion> 
-
-                        </Grid.Column>}
+                        }
+                        </Grid.Column> 
                     </Grid>
+                </div>
             );
         }
 }

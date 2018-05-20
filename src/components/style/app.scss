@@ -1,4 +1,6 @@
 
+@import url("https://fonts.googleapis.com/css?family=Arima+Madurai");
+@import url("https://fonts.googleapis.com/css?family=Abhaya+Libre");
 
 * { 
     box-sizing: border-box; 
@@ -9,139 +11,160 @@
     background : $extra_color url($url) !important;
     background-size: $contain_or_cover !important;
     background-repeat: no-repeat !important;
-    background-position:center !important;
     margin: 0 !important;
-    width:100vw !important;
+}
+
+.mainpage {
+    height:100vh;
 }
 
 body{
-    width:100vw;
-    height:100vh;
-    letter-spacing: .2em;
-    background-color:#FDFDFD;
     
-}
-
-.mainpage{
-    overflow:hidden;
-    height:100vh;
-    &:hover {  
-        overflow-y:scroll; 
-    }
+    letter-spacing: .2rem;
+    padding:0px !important;
+    background:#777;
 }
 
 .navbar {
-    background-color:#fff !important;
+    background-color:#e5ddcf !important;
     position:fixed;
     width: 100vw !important;
     z-index:998;
-    -webkit-transition: all .8s ease;
-    transition: all .8s ease;
-    &:hover{
-        opacity:1 !important;
-    }
+    -webkit-transition: opacity .5s linear;
+    transition: opacity .5s linear;
 }
 
 
 /*----------------------------- home ------------------------------*/
+
 footer {
-    font-family: 'Abhaya Libre';
+    font-family: Julius Sans One;
+    height:40vh !important;
     width:100vw;
-    height:30vh !important;
-    font-size:1.6em;
-    background-color:#ddd;
+    font-size:1.6em;//807d6argba(70,30,20
+    background: linear-gradient(to right, #805d4a, #a08d7a, #805d4a);
     display:table-cell;
     text-align:center;
     vertical-align: middle;
-    color:#777;
+    color:#FfFDFD;
 }
 
+div#body-shadower {
+   position: absolute;
+   height:102%;
+   width:100%;
+   background-color:#FDFDFD;
+   opacity: 0;
+   z-index:15;
+   border:2px solid #FDFDFD;
 
-.home-header{
-    position:relative;
-    top:0 !important;
+}
+
+#html {
+    height:100%;
+    overflow:hidden;
+}
+
+#home {
+    margin:0;
+    padding:0;
+    -webkit-perspective: 1px;
+    -webkit-transform-style: preserve-3d;
+    	perspective: 1px;
+    	transform-style: preserve-3d;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}    
+
+video {
+    position:absolute;
+    max-height:100vh;
+    min-width:100vw;
+    top:0;
+    left:0;
+    margin:0;
+    z-index:-1;
+    filter: saturate(80%) opacity(60%);
+    transform: translateZ(-1px) scale(2);
+    transform-style: preserve-3d;
+        -webkit-transform: translateZ(-1px) scale(2);
+        -webkit-transform-style: preserve-3d;
+}
+     
+.header-text {
+    position: relative;
+    padding: 25vh 10%;
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+   // 
+	transform-style: inherit;
+	transform-origin: 50% 100%;
+
+    height:100vh;
+    letter-spacing: .5rem;
+    text-shadow: 0 2px 2px #000;
     text-align:center;
-    &> video {
-        min-height:100vh;
-        min-width:100vw;
-        top:0;
-        left:0;
-        margin:0;
-        & > source { border:2px solid green; padding:0; margin:0;}
-    }
-    &> .header-text {
-        position:absolute;
-        top:50%;
-        left:50%;
-        transform:translate(-50%,-50%);
-        -webkit-box-shadow: 5px 5% 5px 20px #d11 ;
-           -moz-box-shadow: 5px 5px 5px 20px #d11 ;
-                box-shadow: 0px 0px 20px 20px rgba(255,255,255,.4);
-        background:rgba(255,255,255,.4);
-        padding:4% !important;
-        & h1 {font-size:6em; color: #333;}
-        & h2 {font-size:3em; color:#753 ;font-family: 'Open+Sans';}
-    }
+
+
+    & h1 { font-size:6.5em; color: #cfb5a0; font-family: Arima Madurai; }
+    & h2 { font-size:4.5em; color:#dfc5b0 ;font-family: Julius Sans One; }
+
 }
 
-.home{
-        text-align:center;
-        background-color: #FDFDFD !important;
+.home-body {
+   position: relative;
+   min-height: 100vh;
+   width: 100vw;
+   box-sizing: border-box;
+   box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.7);
+   transform-style: inherit; 
+   background: #e5ddcf!important;
+}    
 
-        &>.home-polls {
-            padding:5%;
-            min-height:100vh;
-        	font-family: 'Abhaya Libre';
+.home-polls {
 
-            &>.header-text{
-                padding:4% !important;
-                
-                &>h2{
-                    font-family: 'Open+Sans' !important;
-                    color:#753 !important;
-                    font-size:3em !important;
-                }
-            }
-        }
+    padding:5%;
+    font-family: Julius Sans One;
+    
+    &>h2{
+           text-align:center;
+
+        font-family: Julius Sans One !important;
+        color:#504d3a !important;
+        font-size:3em !important;
+        margin:1.2em 0;
+    }
+    
+}
+
+#or:before, #or:after {
+        
+        width:20vw;
+        height:20px;
+        background:#777;
 }
 
 /*------------- cards grid - home  -------------*/
 
-.cardsGrid{
+.cardsGrid {
     background-color: #FDFDFD !important;
     padding: 2%;
 }
 
-
-.cardsRow{
-    -webkit-column-count: 3;
-	-webkit-column-gap: .2%;
-	-webkit-column-fill: auto;
-	
-	-moz-column-count: 3;
-	-moz-column-gap: .2%;
-	-moz-column-fill: auto;
-	
-	column-count: 3;
-	column-gap: .2%;
-	column-fill: auto;
-	
-	grid-auto-flow: dense;
-
-}
-
 .card {
-    -webkit-break-inside: avoid-column !important;
-	-moz-break-inside: avoid-column !important;
-	break-inside: avoid-column !important;
+ 
 	width: 100% !important;
-	background:lighten(#a97,30%) !important;
+	background:#fff !important;
+	font-family: EB Garamond, serif !important;
 }
+
+
 .header {
     color:#444 !important;
-    font-family: 'Abhaya Libre' !important;
+    font-family: EB Garamond, serif !important;
     font-size:1.5em !important;
-
  }
 
 .drop {
@@ -164,15 +187,23 @@ footer {
 
 $welcome_place : floor((3/8));
 
+// 
+
 .pollsPage {
-    @include background-class-mixin("../../common/media/apples.jpg",cover,white) 
-    opacity:0.7;
-    margin: 0 !important;
+   // @include background-class-mixin("https://res.cloudinary.com/dxnxfwsok/image/upload/c_scale,w_1500/v1520441040/apples_zwspop.jpg",cover,white) 
+   position:relative;
+   width: 100%;
+   height: 100%;
+   overflow:hidden;
+   margin:0 !important;
+
     .welcome_class{
-        background: rgba(255,255,255,.75);
-        padding:2em;
-        color: darken(#642,20%) !important;
-        & h1,h3 {font-family: 'Abhaya Libre !important'; }
+        padding:4%;
+        height:100%;
+        background:rgba(70,30,20,.4);
+        color: #eee;
+        text-align:center;
+        & h2,& h3 {font-family: Julius Sans One !important;}
     }
 }
 
@@ -202,77 +233,79 @@ $welcome_place : floor((3/8));
 
 /*----------------------------- Modal ------------------------------*/
 .dimmer { 
-    background-color:  rgba(0,0,0,0.3) !important;
+    background-color: rgba(0,0,0,.8) !important;
 }
 
 .modalHeader {
     background-color:lighten(#a97,30%) !important;
     color:#532 !important;
-    font-family: 'Abhaya Libre' !important;
+    font-family: Julius Sans One !important;
 }
 
 
 .modalContent {
     color:#754 !important;
-    font-family: 'Abhaya Libre' !important;
-    & > h3 { font-family: 'Abhaya Libre' !important; }
+    font-family: EB Garamond, serif !important;
+    & > h3 { font-family: EB Garamond, serif !important; }
 }
 
 .selection{
     color: lighten(#655,20%) !important;
     font-size: 1.3em !important;
-    font-family: 'Abhaya Libre' !important;
+    font-family: EB Garamond, serif !important;
 }
-
-
-//------------- login / signup ------------------
-
-
-
-div.login-container {
-    @include background-class-mixin("../../common/media/doors.jpg",cover,white);
-}
-
-
-// login form
-
-.loginMessage {
-    height:20vh !important;
-    margin: 0  !important;
-}
-.loginForm {
-    margin: 0  !important;
-    height:40vh !important;
-
-}
-
-/*
-style={{ minHeight : '50% !important', 
-                                                maxHeight : '70% !important',
-                                                textAlign : 'center'
-                                            }}
-*/
 
 
 //------------ add a New Poll --------------
 
 .addNewPoll {
-    @include background-class-mixin("../../common/media/yellow.jpg",contain,#e0dc6f)
+   position:relative;
+   width: 100%;
+   height: 100%;
+   overflow:hidden;
+   margin:0 !important;
+  // background:rgba(0,0,0,.1);
+/*    &::after {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 100%;
+        top: 0%;
+        z-index:-1;
+        left: -125%;
+        background: url("https://images.unsplash.com/photo-1470790376778-a9fbc86d70e2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e480962c9c0c092d7b006c04a9e2ab24&auto=format&fit=crop&w=1298&q=80") 0 0 repeat;
+        -webkit-transform: rotate(30deg);
+        transform: rotate(30deg);
+    }*/
+    
 }
 
+.addNewPollForm {
+    background:rgb(255,250,250) !important;
+}
 
 // ------------- poll page --------------
 .pollPage {
     min-height:100% !important;
     margin:0 !important;
-    background:lighten(#a97,10%) !important;
-
+   // background:#cfc5bf !important;
+   background: linear-gradient(to right, #c0bdaa, #d0cdba, #e0ddca)
 }
 
 
 
 .pieChart {
     padding:0 !important; 
-    background:lighten(#a97,30%) !important;
+    background:lighten(#ba8,30%) !important;
+    //        background: 'linear-gradient(to right, #c0bdaa, #d0cdba, #e0ddca)',
+
     margin:0 !important;
+    position : relative;
+    -webkit-box-shadow: 0px 3px 10px 3px rgba(100,100,100,.4);
+           -moz-box-shadow: 0px 3px 10px 3px rgba(100,100,100,.4);
+                box-shadow: 0px 3px 10px 3px rgba(100,100,100,.4);
+}
+
+.pieChart div.texts:hover, path.slicesEnter:hover{
+    cursor:pointer !important;
 }

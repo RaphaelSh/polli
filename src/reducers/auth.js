@@ -2,21 +2,22 @@ import isEmpty from 'lodash/isEmpty';
 
 const initialState = {
     isAuthenticated: false,
-    user: {}
+    user: {},
+    errors:{}
 }
 
 export default (state = initialState, action = {}) => {
-    console.log('action.user: ',action.user)
     switch (action.type){
-        case 'REQUEST_REJECTED' : if(action.error ==='Invalid Credentials') return { ...state, errors: action.error };
-        case 'SET_CURRENT_USER':
-            const { username, id } = action.user;
-            return {
+        case 'CLEAR_ERRORS': return { ...state, errors: '' }
+        case 'REQUEST_REJECTED' : {
+            return { ...state, errors: action.error };}
+        case 'SET_CURRENT_USER': {
+            return {...state,
                 isAuthenticated: !isEmpty(action.user),
-                user: { username, id },
-                errors: {}
+                user: action.user
             };
+        }
         case 'VERIFICATION_ERRORS': return {...state, errors: action.payload };
-        default: return state;
+        default: return { ...state };
     }
 }

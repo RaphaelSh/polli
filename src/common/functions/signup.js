@@ -10,25 +10,29 @@ export const handleResponse = (res) => {
 }
 
 export const validateInput = (data) => {
-     
-        let errors = {};
+    
+    let errors = {};
         
-       Object.keys(data).forEach((item) => {
-           if(isEmpty(data[item])){
-              errors[item] = "This field is required";
-           }
-       });
-       
-       if(data.email && !Validator.isEmail(data.email)) {
-         errors.email = 'Email is invalid';
-       }
+    Object.keys(data).forEach((name) => {
+        
+        if ( isEmpty( data[name] )) { 
+            let name_to_use = /psConfirm/g.test(name) ? 'password confirmation' : ( name.includes('_') ? name.split('_')[0] : name );
+            name_to_use = name_to_use.replace(/(^[a-z]{1})/g,p=>p.toUpperCase());
+            errors[name] = `${name_to_use} is required`; 
+        }
+        
+        if( /email/g.test(name) && !Validator.isEmail(data[name]) ) {
+            errors[name] = 'Email is invalid';
+        }
       
-      if(data.psConfirm && !Validator.equals(data.password,data.psConfirm)) {
-        errors.psConfirm = 'Passwords must match';
-      }
-        
-      return {
+        if( data.psConfirm && data.password && !Validator.equals(data.password,data.psConfirm )) {
+            errors.psConfirm = 'Passwords must match';
+        } 
+    
+    });
+       
+    return {
         errors,
         isValid: isEmpty(errors)
-      }
+    }
 }

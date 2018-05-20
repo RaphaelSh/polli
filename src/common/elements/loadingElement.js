@@ -1,8 +1,10 @@
 
 import React from 'react';
+import { Dimmer, Loader } from 'semantic-ui-react'
 
 export default  () => (
-            <div className="ui active inverted dimmer">
-                    <div className="ui text loader"> Loading </div>
-            </div>
+            <Dimmer active>
+                 <Loader>Loading</Loader>
+            </Dimmer>
+
 );

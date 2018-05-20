@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "auth0-js": "^9.3.3",
     "axios": "^0.17.1",
     "babel-core": "^6.11.4",
     "classnames": "^2.2.5",
     "d3-ease": "^1.0.3",
     "d3-interpolate": "^1.1.6",
+    "d3-path": "^1.0.5",
     "d3-scale": "^1.0.7",
     "d3-selection": "^1.2.0",
     "d3-shape": "^1.2.0",
@@ -19,6 +21,7 @@
     "react": "^0.14.9",
     "react-dom": "^0.14",
     "react-faux-dom": "^4.1.0",
+    "react-measure": "^2.0.2",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.17",
@@ -28,6 +31,7 @@
     "reselect": "^3.0.1",
     "semantic-ui-react": "^0.77.1",
     "shortid": "^2.2.8",
+    "svg-path-properties": "^0.4.2",
     "validator": "^9.1.2"
   },
   "scripts": {
@@ -40,6 +44,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://polli-gilts.c9users.io:8081",
+  "proxy": "http://polli-cloned-gilts.c9users.io:8081",
   "devDependencies": {}
 }

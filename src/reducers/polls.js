@@ -8,7 +8,9 @@ export default (state=[], { type, payload } = {}) => {
     switch(type){
         case 'SET_POLLS': return payload;
         
-        case 'POLL_ADDED': return [ ...state, payload ];
+        case 'POLL_ADDED': {
+            return [ ...state, payload ];
+        }
         
         case 'POLL_DELETED': return state.filter ( item => item._id !== payload );
 
@@ -30,7 +32,6 @@ export default (state=[], { type, payload } = {}) => {
             );
             let newstate = _.cloneDeep(state);
             newstate[index] = Object.assign({}, state[index], { options, sum: state[index].sum+1 });
-            console.log('newstate: ',newstate);
             return newstate;
         }
 

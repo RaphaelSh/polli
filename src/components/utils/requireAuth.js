@@ -5,14 +5,13 @@ import PropTypes from 'prop-types';
 
 const Authenticate = (ComposedComponent) => class extends React.Component {
     
-        componentWillMount() {
-
+        componentDidMount() {
             if(!this.props.isAuthenticated){
                 this.props.addFlashMessages({
                     type:'error',
                     text:'You need to login to access this page'
                 });
-             this.props.history.push('/login');
+             this.props.history.push('/signup/0');
             }
         }
         
@@ -29,9 +28,10 @@ const Authenticate = (ComposedComponent) => class extends React.Component {
         }
  }
 
+const { bool, func } = PropTypes;
 Authenticate.prototype = {
-        isAuthenticated: PropTypes.bool.isRequired,
-        addFlashMessages: PropTypes.func.isRequired
+        isAuthenticated: bool.isRequired,
+        addFlashMessages: func.isRequired
 }
 
 const mapStateToProps = ({ auth }) => ({ isAuthenticated: auth.isAuthenticated });
@@ -39,7 +39,7 @@ const mapStateToProps = ({ auth }) => ({ isAuthenticated: auth.isAuthenticated }
 const mapDispatchToProps = dispatch => ({ addFlashMessages : message => dispatch({ type: 'ADD_FLASH_MESSAGE', message })});
     
 
-export default (ComposedComponent) =>{
+export default ( ComposedComponent ) =>{
    ComposedComponent = Authenticate(ComposedComponent);
    return connect( mapStateToProps, mapDispatchToProps )( ComposedComponent );
 };
