@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "auth0-js": "^9.3.3",
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "babel-core": "^6.11.4",
     "classnames": "^2.2.5",
     "d3-ease": "^1.0.3",
